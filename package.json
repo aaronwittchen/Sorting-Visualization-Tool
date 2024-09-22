@@ -1,7 +1,7 @@
 {
-  "homepage": "onionseller.github.io",
+  "homepage": "https://onionseller.github.io/Sorting-Visualization-Tool/",
   "name": "reactjs-sorting-visualization-tool",
-  "private": true,
+  "private": false,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
