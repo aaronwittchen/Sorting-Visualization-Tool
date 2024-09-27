@@ -4,7 +4,7 @@
 
 import React from "react";
 import "./Modal.css";
-import aboutAlgorithm from "../data/aboutAlgorithm";
+import aboutAlgorithm from "../../data/aboutAlgorithm";
 
 export default function Modal({ isOpen, onClose, sortingState }) {
   if (isOpen) {
