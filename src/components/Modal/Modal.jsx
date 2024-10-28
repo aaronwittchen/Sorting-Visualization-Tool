@@ -82,7 +82,7 @@ export default function Modal({ isOpen, onClose, sortingState }) {
               </div>
             </div>
             <button className="close-modal" onClick={onClose}>
-              CLOSE
+              X
             </button>
           </div>
         </div>

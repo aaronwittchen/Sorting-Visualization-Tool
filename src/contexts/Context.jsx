@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useRef } from "react";
 
 import { getRandomNumber, getDigit, mostDigits } from "../helpers/math";
 import { awaitTimeout } from "../helpers/promises";
@@ -18,6 +18,7 @@ function Context({ children }) {
         sorted: false,
         sorting: false
     });
+    const abortControllerRef = useRef(null);
 
     const changeBar = (index, payload) => {
         setSortingState((prev) => ({
@@ -26,27 +27,34 @@ function Context({ children }) {
         }));
     };
 
-    const generateSortingArray = (sorting) => {
-        const generatedArray = Array.from({ length: 50 }, () => {
-            return {
-                value: getRandomNumber(102, 980),
-                state: "idle",
-            };
-        });
+    const generateSortingArray = () => {
+        // Cancel ongoing sorting operation if any
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+            abortControllerRef.current = null;
+        }
+
+        const generatedArray = Array.from({ length: 50 }, () => ({
+            value: getRandomNumber(102, 980),
+            state: "idle",
+        }));
 
         setSortingState((prev) => ({
             ...prev,
             array: generatedArray,
             sorted: false,
             sorting: false
-        }))
+        }));
     };
 
-    const bubbleSort = async () => {
+    const bubbleSort = async (signal) => {
         const arr = sortingState.array.map((item) => item.value);
 
         for (let i = 0; i < arr.length; i++) {
             for (let j = 0; j < arr.length - i - 1; j++) {
+                if (signal.aborted) {
+                    throw new DOMException('Aborted', 'AbortError');
+                }
                 changeBar(j, { state: "selected" });
                 changeBar(j + 1, { state: "selected" });
                 await awaitTimeout(sortingState.delay);
@@ -66,10 +74,11 @@ function Context({ children }) {
         }
     };
 
-    const selectionSort = async () => {
+    const selectionSort = async (signal) => {
         const arr = sortingState.array.map((item) => item.value);
 
         for (let i = 0; i < arr.length; i++) {
+            if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
             let min = i;
             changeBar(min, { state: "selected" });
 
@@ -99,10 +108,11 @@ function Context({ children }) {
         }
     };
 
-    const insertionSort = async () => {
+    const insertionSort = async (signal) => {
         const arr = sortingState.array.map((item) => item.value);
 
         for (let i = 1; i < arr.length; i++) {
+            if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
             let current = arr[i];
             let j = i - 1;
 
@@ -121,16 +131,17 @@ function Context({ children }) {
         }
     };
 
-    const mergeSort = async () => {
+    const mergeSort = async (signal) => {
         const arr = sortingState.array.map((item) => item.value);
-        mergeSortHelper(arr);
+        await mergeSortHelper(arr, 0, arr.length - 1, signal);
     };
-    async function mergeSortHelper(arr, start = 0, end = arr.length - 1) {
+    async function mergeSortHelper(arr, start, end, signal) {
+        if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
         if (start >= end) return;
 
         const middle = Math.floor((start + end) / 2);
-        await mergeSortHelper(arr, start, middle);
-        await mergeSortHelper(arr, middle + 1, end);
+        await mergeSortHelper(arr, start, middle, signal);
+        await mergeSortHelper(arr, middle + 1, end, signal);
         await mergeSortMerger(arr, start, middle, end);
     }
     async function mergeSortMerger(arr, start, middle, end) {
@@ -169,11 +180,12 @@ function Context({ children }) {
         }
     }
 
-    const quickSort = async () => {
+    const quickSort = async (signal) => {
         const arr = sortingState.array.map((item) => item.value);
-        quickSortHelper(arr);
+        await quickSortHelper(arr, 0, arr.length - 1, signal);
     };
-    const quickSortHelper = async (arr, start = 0, end = arr.length - 1) => {
+    const quickSortHelper = async (arr, start, end, signal) => {
+        if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
         if (start >= end) {
             return;
         }
@@ -200,15 +212,16 @@ function Context({ children }) {
             }
         }
 
-        await quickSortHelper(arr, start, j);
-        await quickSortHelper(arr, i, end);
+        await quickSortHelper(arr, start, j, signal);
+        await quickSortHelper(arr, i, end, signal);
     }
 
-    const radixSort = async () => {
+    const radixSort = async (signal) => {
         let arr = sortingState.array.map((item) => item.value);
         let maxDigitCount = mostDigits(arr);
 
         for (let k = 0; k < maxDigitCount; k++) {
+            if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
             let digitBuckets = Array.from({ length: 10 }, () => []);
             for (let i = 0; i < arr.length; i++) {
                 let digit = getDigit(arr[i], k);
@@ -226,42 +239,43 @@ function Context({ children }) {
     }
 
     // Utility function for delaying execution
-    const bucketSort = async () => {
-    let arr = sortingState.array.map((item) => item.value);
-    if (arr.length === 0) return;
+    const bucketSort = async (signal) => {
+        let arr = sortingState.array.map((item) => item.value);
+        if (arr.length === 0) return;
 
-    // Determine min and max values
-    let minValue = Math.min(...arr);
-    let maxValue = Math.max(...arr);
-    
-    // Initialize buckets
-    const DEFAULT_BUCKET_SIZE = 5;
-    let bucketSize = sortingState.bucketSize || DEFAULT_BUCKET_SIZE;
-    let bucketCount = Math.floor((maxValue - minValue) / bucketSize) + 1;
-    let buckets = Array.from({ length: bucketCount }, () => []);
+        // Determine min and max values
+        let minValue = Math.min(...arr);
+        let maxValue = Math.max(...arr);
+        
+        // Initialize buckets
+        const DEFAULT_BUCKET_SIZE = 5;
+        let bucketSize = sortingState.bucketSize || DEFAULT_BUCKET_SIZE;
+        let bucketCount = Math.floor((maxValue - minValue) / bucketSize) + 1;
+        let buckets = Array.from({ length: bucketCount }, () => []);
 
-    // Distribute input array values into buckets
-    arr.forEach(value => {
-        let bucketIndex = Math.floor((value - minValue) / bucketSize);
-        buckets[bucketIndex].push(value);
-    });
+        // Distribute input array values into buckets
+        arr.forEach(value => {
+            let bucketIndex = Math.floor((value - minValue) / bucketSize);
+            buckets[bucketIndex].push(value);
+        });
 
-    // Sort buckets and concatenate back into the array
-    arr.length = 0;
-    for (let i = 0; i < buckets.length; i++) {
-        buckets[i].sort((a, b) => a - b);
-        for (let j = 0; j < buckets[i].length; j++) {
-            arr.push(buckets[i][j]);
+        // Sort buckets and concatenate back into the array
+        arr.length = 0;
+        for (let i = 0; i < buckets.length; i++) {
+            buckets[i].sort((a, b) => a - b);
+            for (let j = 0; j < buckets[i].length; j++) {
+                arr.push(buckets[i][j]);
+            }
         }
-    }
 
-    // Update UI to reflect sorting progress
-    for (let i = 0; i < arr.length; i++) {
-        changeBar(i, { value: arr[i], state: "selected" });
-        await awaitTimeout(sortingState.delay);
-        changeBar(i, { value: arr[i], state: "idle" });
-    }
-};
+        // Update UI to reflect sorting progress
+        for (let i = 0; i < arr.length; i++) {
+            if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
+            changeBar(i, { value: arr[i], state: "selected" });
+            await awaitTimeout(sortingState.delay);
+            changeBar(i, { value: arr[i], state: "idle" });
+        }
+    };
 
     const algorithmMap = {
         "bubble_sort": bubbleSort,
@@ -277,16 +291,33 @@ function Context({ children }) {
         setSortingState((prev) => ({
             ...prev,
             sorting: true
-        }))
+        }));
 
-        await algorithmMap[sortingState.algorithm]();
+        abortControllerRef.current = new AbortController();
+        const signal = abortControllerRef.current.signal;
 
-        setSortingState((prev) => ({
-            ...prev,
-            sorted: true,
-            sorting: false  
-        }))
-    }
+        try {
+            await algorithmMap[sortingState.algorithm](signal);
+
+            setSortingState((prev) => ({
+                ...prev,
+                sorted: true,
+                sorting: false  
+            }));
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('Sorting was aborted');
+                setSortingState((prev) => ({
+                    ...prev,
+                    sorting: false
+                }));
+            } else {
+                console.error('Error during sorting:', error);
+            }
+        } finally {
+            abortControllerRef.current = null;
+        }
+    };
 
     const changeSortingSpeed = (e) => {
         setSortingState((prev) => ({

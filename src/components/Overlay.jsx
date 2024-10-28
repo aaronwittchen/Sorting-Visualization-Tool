@@ -56,10 +56,17 @@ function Overlay() {
   </div>
 
         <div className="flex items-center gap-4 max-w-3xl mb-8">
-          <button disabled={sortingState.sorting} onClick={startVisualizing} className="px-4 py-2 push-btn text-white-light disabled:brightness-75">
+          <button 
+            disabled={sortingState.sorting} 
+            onClick={startVisualizing} 
+            className="px-4 py-2 push-btn text-white-light disabled:brightness-75"
+          >
             Start
           </button>
-          <button onClick={() => generateSortingArray()} className="bg-carbon text-white px-5 py-3 rounded-md">
+          <button 
+            onClick={generateSortingArray} 
+            className="bg-carbon text-white px-5 py-3 rounded-md"
+          >
             Reset
           </button>
           <select
