@@ -1,3 +1,4 @@
+import React from "react";
 import Overlay from "./components/Overlay";
 import Context from "./contexts/Context";
 

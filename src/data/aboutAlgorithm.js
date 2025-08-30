@@ -1,5 +1,5 @@
-// Explains every algorithm in detail, including time- and space complexity
-// Used in Modal
+// aboutAlgorithm.js
+// Contains detailed descriptions, time/space complexity, and explanations for each sorting algorithm.
 
 const aboutAlgorithm = {
 	bubble_sort: {
