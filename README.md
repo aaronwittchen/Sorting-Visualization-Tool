@@ -23,7 +23,7 @@ Interactive web application that visualizes 7 sorting algorithms in real-time. B
 ## Installation
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/aaronwittchen/Sorting-Visualization-Tool.git
 cd Sorting-Visualization-Tool
 npm install
 npm run dev
