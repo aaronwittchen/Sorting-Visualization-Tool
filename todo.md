@@ -36,6 +36,10 @@
 - [ ] Memory leaks in long-running visualizations
 - [ ] Regular dependency updates
 
+- [ ] Add build status badge to README  
+  - If using GitHub Actions for testing/CI, include the workflow badge  
+  - Add Codecov coverage badge for test coverage reports
+
 ## Completed
 - [x] 7 sorting algorithms implementation
 - [x] Real-time visualization with start/pause/resume
