@@ -1,5 +1,12 @@
 # Sorting Visualization Tool
 
+[![MIT License](https://img.shields.io/github/license/aaronwittchen/Sorting-Visualization-Tool)](https://github.com/aaronwittchen/Sorting-Visualization-Tool/blob/main/LICENSE)
+[![Live Demo](https://img.shields.io/badge/demo-online-green?logo=vercel)](https://sorting-visualization-tool.vercel.app/)
+[![React Version](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react)](https://react.dev)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-38B2AC?logo=tailwindcss)](https://tailwindcss.com)
+[![Test Coverage](https://img.shields.io/badge/tests-passing-brightgreen)]()
+[![GitHub last commit](https://img.shields.io/github/last-commit/aaronwittchen/Sorting-Visualization-Tool)](https://github.com/aaronwittchen/Sorting-Visualization-Tool/commits)
+
 Interactive web application that visualizes 7 sorting algorithms in real-time. Built with React 18 and Tailwind CSS.   
 Live page: https://sorting-visualization-tool.vercel.app/
 
