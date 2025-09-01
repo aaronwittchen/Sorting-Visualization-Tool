@@ -10,7 +10,7 @@
 Interactive web application that visualizes 7 sorting algorithms in real-time. Built with React 18 and Tailwind CSS.   
 Live page: https://sorting-visualization-tool.vercel.app/
 
-![Sorting-Visualization-Showcase](https://github.com/user-attachments/assets/4a68b46e-1270-4553-add3-4a68b7006d7c)
+https://github.com/user-attachments/assets/4a68b46e-1270-4553-add3-4a68b7006d7c
 
 ## Features
 
