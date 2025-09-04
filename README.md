@@ -5,7 +5,7 @@
 [![React Version](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react)](https://react.dev)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-38B2AC?logo=tailwindcss)](https://tailwindcss.com)
 [![Vitest](https://github.com/aaronwittchen/Sorting-Visualization-Tool/actions/workflows/test.yml/badge.svg)](https://github.com/aaronwittchen/Sorting-Visualization-Tool/actions)
-[![Coverage](./docs/coverage.svg)](https://github.com/aaronwittchen/Sorting-Visualization-Tool/actions)
+[![Codecov](https://codecov.io/gh/aaronwittchen/Sorting-Visualization-Tool/branch/main/graph/badge.svg)](https://codecov.io/gh/aaronwittchen/Sorting-Visualization-Tool)
 [![GitHub last commit](https://img.shields.io/github/last-commit/aaronwittchen/Sorting-Visualization-Tool)](https://github.com/aaronwittchen/Sorting-Visualization-Tool/commits)
 
 Interactive web application that visualizes 7 sorting algorithms in real-time. Built with React 18 and Tailwind CSS.  
