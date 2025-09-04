@@ -14,10 +14,8 @@ import { getDigit, mostDigits } from "./math";
  * @param {Object} pauseControllerRef - For pausing
  */
 export const bubbleSort = async (array, changeBar, getDelay, signal, pauseControllerRef) => {
-    const arr = array.map((item) => item.value);
-
-    for (let i = 0; i < arr.length; i++) {
-        for (let j = 0; j < arr.length - i - 1; j++) {
+    for (let i = 0; i < array.length; i++) {
+        for (let j = 0; j < array.length - i - 1; j++) {
             if (signal.aborted) {
                 throw new DOMException('Aborted', 'AbortError');
             }
@@ -29,11 +27,11 @@ export const bubbleSort = async (array, changeBar, getDelay, signal, pauseContro
             await awaitTimeout(getDelay());
 
             // Swap if needed
-            if (arr[j] > arr[j + 1]) {
-                let temp = arr[j];
-                arr[j] = arr[j + 1];
-                changeBar(j, { value: arr[j + 1] });
-                arr[j + 1] = temp;
+            if (array[j].value > array[j + 1].value) {
+                let temp = array[j].value;
+                array[j].value = array[j + 1].value;
+                changeBar(j, { value: array[j].value });
+                array[j + 1].value = temp;
                 changeBar(j + 1, { value: temp });
                 await awaitTimeout(getDelay());
             }
@@ -54,19 +52,17 @@ export const bubbleSort = async (array, changeBar, getDelay, signal, pauseContro
  * @param {Object} pauseControllerRef
  */
 export const selectionSort = async (array, changeBar, getDelay, signal, pauseControllerRef) => {
-    const arr = array.map((item) => item.value);
-
-    for (let i = 0; i < arr.length; i++) {
+    for (let i = 0; i < array.length; i++) {
         if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
         let min = i;
         changeBar(min, { state: "selected" });
 
-        for (let j = i + 1; j < arr.length; j++) {
+        for (let j = i + 1; j < array.length; j++) {
             changeBar(j, { state: "selected" });
             await checkPause(pauseControllerRef);
             await awaitTimeout(getDelay());
 
-            if (arr[j] < arr[min]) {
+            if (array[j].value < array[min].value) {
                 changeBar(min, { state: "idle" });
                 min = j;
                 changeBar(min, { state: "selected" });
@@ -77,10 +73,10 @@ export const selectionSort = async (array, changeBar, getDelay, signal, pauseCon
 
         // Swap if needed
         if (min !== i) {
-            let temp = arr[i];
-            arr[i] = arr[min];
-            changeBar(i, { value: arr[min], state: "idle" });
-            arr[min] = temp;
+            let temp = array[i].value;
+            array[i].value = array[min].value;
+            changeBar(i, { value: array[i].value, state: "idle" });
+            array[min].value = temp;
             changeBar(min, { value: temp, state: "idle" });
         } else {
             changeBar(i, { state: "idle" });
@@ -98,33 +94,31 @@ export const selectionSort = async (array, changeBar, getDelay, signal, pauseCon
  * @param {Object} pauseControllerRef
  */
 export const insertionSort = async (array, changeBar, getDelay, signal, pauseControllerRef) => {
-    const arr = array.map((item) => item.value);
-
-    for (let i = 1; i < arr.length; i++) {
+    for (let i = 1; i < array.length; i++) {
         if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
-        let current = arr[i];
+        let current = array[i].value;
         let j = i - 1;
 
         changeBar(i, { value: current, state: "selected" });
 
         // Shift elements to make space for insertion
-        while (j > -1 && current < arr[j]) {
-            arr[j + 1] = arr[j];
-            changeBar(j + 1, { value: arr[j], state: "selected" });
+        while (j > -1 && current < array[j].value) {
+            array[j + 1].value = array[j].value;
+            changeBar(j + 1, { value: array[j].value, state: "selected" });
             j--;
             await checkPause(pauseControllerRef);
             await awaitTimeout(getDelay());
-            changeBar(j + 2, { value: arr[j + 1], state: "idle" });
+            changeBar(j + 2, { value: array[j + 2].value, state: "idle" });
         }
 
-        arr[j + 1] = current;
+        array[j + 1].value = current;
         changeBar(j + 1, { value: current, state: "idle" });
     }
 };
 
-const mergeSortMerger = async (arr, start, middle, end, changeBar, getDelay, pauseControllerRef) => {
-    let left = arr.slice(start, middle + 1);
-    let right = arr.slice(middle + 1, end + 1);
+const mergeSortMerger = async (array, start, middle, end, changeBar, getDelay, pauseControllerRef) => {
+    let left = array.slice(start, middle + 1).map(item => item.value);
+    let right = array.slice(middle + 1, end + 1).map(item => item.value);
 
     let i = 0,
         j = 0,
@@ -132,43 +126,51 @@ const mergeSortMerger = async (arr, start, middle, end, changeBar, getDelay, pau
 
     while (i < left.length && j < right.length) {
         if (left[i] < right[j]) {
+            array[k].value = left[i];
             changeBar(k, { value: left[i], state: "selected" });
-            arr[k++] = left[i++];
+            k++;
+            i++;
         } else {
+            array[k].value = right[j];
             changeBar(k, { value: right[j], state: "selected" });
-            arr[k++] = right[j++];
+            k++;
+            j++;
         }
         await checkPause(pauseControllerRef);
         await awaitTimeout(getDelay());
     }
 
     while (i < left.length) {
+        array[k].value = left[i];
         changeBar(k, { value: left[i], state: "selected" });
-        arr[k++] = left[i++];
+        k++;
+        i++;
         await checkPause(pauseControllerRef);
         await awaitTimeout(getDelay());
     }
 
     while (j < right.length) {
+        array[k].value = right[j];
         changeBar(k, { value: right[j], state: "selected" });
-        arr[k++] = right[j++];
+        k++;
+        j++;
         await checkPause(pauseControllerRef);
         await awaitTimeout(getDelay());
     }
 
     for (let i = start; i <= end; i++) {
-        changeBar(i, { value: arr[i], state: "idle" });
+        changeBar(i, { value: array[i].value, state: "idle" });
     }
 };
 
-const mergeSortHelper = async (arr, start, end, changeBar, getDelay, signal, pauseControllerRef) => {
+const mergeSortHelper = async (array, start, end, changeBar, getDelay, signal, pauseControllerRef) => {
     if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
     if (start >= end) return;
 
     const middle = Math.floor((start + end) / 2);
-    await mergeSortHelper(arr, start, middle, changeBar, getDelay, signal, pauseControllerRef);
-    await mergeSortHelper(arr, middle + 1, end, changeBar, getDelay, signal, pauseControllerRef);
-    await mergeSortMerger(arr, start, middle, end, changeBar, getDelay, pauseControllerRef);
+    await mergeSortHelper(array, start, middle, changeBar, getDelay, signal, pauseControllerRef);
+    await mergeSortHelper(array, middle + 1, end, changeBar, getDelay, signal, pauseControllerRef);
+    await mergeSortMerger(array, start, middle, end, changeBar, getDelay, pauseControllerRef);
 };
 
 /**
@@ -180,41 +182,43 @@ const mergeSortHelper = async (arr, start, end, changeBar, getDelay, signal, pau
  * @param {Object} pauseControllerRef - For pausing
  */
 export const mergeSort = async (array, changeBar, getDelay, signal, pauseControllerRef) => {
-    const arr = array.map((item) => item.value);
-    await mergeSortHelper(arr, 0, arr.length - 1, changeBar, getDelay, signal, pauseControllerRef);
+    await mergeSortHelper(array, 0, array.length - 1, changeBar, getDelay, signal, pauseControllerRef);
 };
 
-const quickSortHelper = async (arr, start, end, changeBar, getDelay, signal, pauseControllerRef) => {
+const quickSortHelper = async (array, start, end, changeBar, getDelay, signal, pauseControllerRef) => {
     if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
     if (start >= end) {
         return;
     }
 
-    const pivot = arr[Math.floor((start + end) / 2)];
+    const pivot = array[Math.floor((start + end) / 2)].value;
     let i = start;
     let j = end;
 
     while (i <= j) {
-        while (arr[i] < pivot) i++;
-        while (arr[j] > pivot) j--;
+        while (array[i].value < pivot) i++;
+        while (array[j].value > pivot) j--;
 
         if (i <= j) {
-            [arr[i], arr[j]] = [arr[j], arr[i]];
-            changeBar(i, { value: arr[i], state: "selected" });
-            changeBar(j, { value: arr[j], state: "selected" });
+            let temp = array[i].value;
+            array[i].value = array[j].value;
+            array[j].value = temp;
+            
+            changeBar(i, { value: array[i].value, state: "selected" });
+            changeBar(j, { value: array[j].value, state: "selected" });
 
             await checkPause(pauseControllerRef);
             await awaitTimeout(getDelay());
 
-            changeBar(i, { value: arr[i], state: "idle" });
-            changeBar(j, { value: arr[j], state: "idle" });
+            changeBar(i, { value: array[i].value, state: "idle" });
+            changeBar(j, { value: array[j].value, state: "idle" });
             i++;
             j--;
         }
     }
 
-    await quickSortHelper(arr, start, j, changeBar, getDelay, signal, pauseControllerRef);
-    await quickSortHelper(arr, i, end, changeBar, getDelay, signal, pauseControllerRef);
+    await quickSortHelper(array, start, j, changeBar, getDelay, signal, pauseControllerRef);
+    await quickSortHelper(array, i, end, changeBar, getDelay, signal, pauseControllerRef);
 };
 
 /**
@@ -226,8 +230,7 @@ const quickSortHelper = async (arr, start, end, changeBar, getDelay, signal, pau
  * @param {Object} pauseControllerRef - For pausing
  */
 export const quickSort = async (array, changeBar, getDelay, signal, pauseControllerRef) => {
-    const arr = array.map((item) => item.value);
-    await quickSortHelper(arr, 0, arr.length - 1, changeBar, getDelay, signal, pauseControllerRef);
+    await quickSortHelper(array, 0, array.length - 1, changeBar, getDelay, signal, pauseControllerRef);
 };
 
 /**
@@ -253,6 +256,7 @@ export const radixSort = async (array, changeBar, getDelay, signal, pauseControl
         arr = [].concat(...digitBuckets);
 
         for (let i = 0; i < arr.length; i++) {
+            array[i].value = arr[i];
             changeBar(i, { value: arr[i], state: "selected" });
             await checkPause(pauseControllerRef);
             await awaitTimeout(getDelay());
@@ -300,6 +304,7 @@ export const bucketSort = async (array, changeBar, getDelay, signal, pauseContro
     // Update UI to reflect sorting progress
     for (let i = 0; i < arr.length; i++) {
         if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
+        array[i].value = arr[i];
         changeBar(i, { value: arr[i], state: "selected" });
         await checkPause(pauseControllerRef);
         await awaitTimeout(getDelay());

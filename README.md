@@ -4,10 +4,10 @@
 [![Live Demo](https://img.shields.io/badge/demo-online-green?logo=vercel)](https://sorting-visualization-tool.vercel.app/)
 [![React Version](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react)](https://react.dev)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-38B2AC?logo=tailwindcss)](https://tailwindcss.com)
-[![Test Coverage](https://img.shields.io/badge/tests-passing-brightgreen)]()
+[![Vitest](https://github.com/<USERNAME>/<REPO>/actions/workflows/test.yml/badge.svg)](https://github.com/<USERNAME>/<REPO>/actions)
 [![GitHub last commit](https://img.shields.io/github/last-commit/aaronwittchen/Sorting-Visualization-Tool)](https://github.com/aaronwittchen/Sorting-Visualization-Tool/commits)
 
-Interactive web application that visualizes 7 sorting algorithms in real-time. Built with React 18 and Tailwind CSS.   
+Interactive web application that visualizes 7 sorting algorithms in real-time. Built with React 18 and Tailwind CSS.  
 Live page: https://sorting-visualization-tool.vercel.app/
 
 https://github.com/user-attachments/assets/4a68b46e-1270-4553-add3-4a68b7006d7c
@@ -27,7 +27,7 @@ https://github.com/user-attachments/assets/4a68b46e-1270-4553-add3-4a68b7006d7c
 
 - React 18.2.0 + Vite
 - Tailwind CSS
-- Jest + React Testing Library
+- Vitest + React Testing Library
 - Context API for state management
 
 ## Installation
@@ -74,6 +74,7 @@ src/
 ## Testing
 
 Comprehensive test coverage including:
+
 - Unit tests for all algorithms
 - Component tests with user interactions
 - Integration tests for state management

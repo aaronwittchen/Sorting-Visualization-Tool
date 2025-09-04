@@ -1,183 +1,166 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import Modal from '../Modal';
 
-const mockSortingState = {
-  algorithm: 'bubble_sort',
-  array: [
-    { value: 100, state: 'idle' },
-    { value: 200, state: 'selected' },
-    { value: 150, state: 'idle' }
-  ],
-  delay: 128,
-  sorted: false,
-  sorting: false,
-  paused: false
+// Mock data
+const mockAboutAlgorithm = {
+  bubble_sort: {
+    name: 'Bubble Sort',
+    description:
+      'Bubble Sort is a straightforward sorting algorithm known for its simplicity.',
+    time_complexity: {
+      best: ['O(n)', 'amber-500'],
+      average: ['O(n²)', 'rose-500'],
+      worst: ['O(n²)', 'rose-500'],
+    },
+    space_complexity: ['O(1)', 'teal-800'],
+  },
+  quick_sort: {
+    name: 'Quick Sort',
+    description: 'Quick desc',
+    time_complexity: {
+      best: ['O(n log n)', 'amber-500'],
+      average: ['O(n log n)', 'amber-500'],
+      worst: ['O(n²)', 'rose-500'],
+    },
+    space_complexity: ['O(log n)', 'teal-800'],
+  },
+};
+vi.mock('../../data/aboutAlgorithm', () => ({
+  default: mockAboutAlgorithm,
+}));
+vi.mock('../Modal.css', () => ({}));
+
+const defaultProps = {
+  isOpen: false,
+  onClose: vi.fn(),
+  sortingState: { algorithm: 'bubble_sort' },
 };
 
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+  document.body.className = '';
+});
+
 describe('Modal Component', () => {
-  const mockOnClose = jest.fn();
+  it('renders only when open and toggles body class', () => {
+    const { rerender } = render(<Modal {...defaultProps} />);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(document.body).not.toHaveClass('active-modal');
 
-  beforeEach(() => {
-    jest.clearAllMocks();
+    rerender(<Modal {...defaultProps} isOpen={true} />);
+    expect(
+      screen.getByRole('heading', { name: /bubble sort/i })
+    ).toBeInTheDocument();
+    expect(document.body).toHaveClass('active-modal');
   });
 
-  it('should not render when isOpen is false', () => {
-    render(
-      <Modal 
-        isOpen={false} 
-        onClose={mockOnClose} 
-        sortingState={mockSortingState} 
-      />
+  it('closes with button, overlay, or Escape', () => {
+    const mockOnClose = vi.fn();
+    const { rerender } = render(
+      <Modal {...defaultProps} isOpen={true} onClose={mockOnClose} />
     );
 
-    expect(screen.queryByText('About Sorting Algorithms')).not.toBeInTheDocument();
-  });
-
-  it('should render when isOpen is true', () => {
-    render(
-      <Modal 
-        isOpen={true} 
-        onClose={mockOnClose} 
-        sortingState={mockSortingState} 
-      />
+    // Test close button click
+    const closeButtons = screen.getAllByRole('button', {
+      name: /close modal/i,
+    });
+    const closeButton = closeButtons.find(
+      (btn) => btn.className === 'close-modal'
     );
-
-    expect(screen.getByText('About Sorting Algorithms')).toBeInTheDocument();
-  });
-
-  it('should call onClose when close button is clicked', async () => {
-    const user = userEvent.setup();
-    
-    render(
-      <Modal 
-        isOpen={true} 
-        onClose={mockOnClose} 
-        sortingState={mockSortingState} 
-      />
-    );
-
-    const closeButton = screen.getByText('×');
-    await user.click(closeButton);
-
+    fireEvent.click(closeButton);
     expect(mockOnClose).toHaveBeenCalledTimes(1);
-  });
 
-  it('should call onClose when clicking outside the modal', async () => {
-    const user = userEvent.setup();
-    
-    render(
-      <Modal 
-        isOpen={true} 
-        onClose={mockOnClose} 
-        sortingState={mockSortingState} 
-      />
+    // Reset and test overlay click
+    mockOnClose.mockClear();
+    const overlay = closeButtons.find((btn) =>
+      btn.className.includes('overlay')
     );
-
-    const overlay = screen.getByTestId('modal-overlay');
-    await user.click(overlay);
-
+    fireEvent.click(overlay);
     expect(mockOnClose).toHaveBeenCalledTimes(1);
-  });
 
-  it('should not call onClose when clicking inside the modal content', async () => {
-    const user = userEvent.setup();
-    
-    render(
-      <Modal 
-        isOpen={true} 
-        onClose={mockOnClose} 
-        sortingState={mockSortingState} 
-      />
-    );
+    // Test Escape key when modal is open
+    mockOnClose.mockClear();
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
 
-    const modalContent = screen.getByTestId('modal-content');
-    await user.click(modalContent);
-
+    // Test Escape key when modal is closed
+    mockOnClose.mockClear();
+    rerender(<Modal {...defaultProps} isOpen={false} onClose={mockOnClose} />);
+    fireEvent.keyDown(document, { key: 'Escape' });
     expect(mockOnClose).not.toHaveBeenCalled();
   });
 
-  it('should display algorithm information', () => {
-    render(
-      <Modal 
-        isOpen={true} 
-        onClose={mockOnClose} 
-        sortingState={mockSortingState} 
-      />
-    );
+  it('renders algorithm info and table headers', () => {
+    const { container } = render(<Modal {...defaultProps} isOpen={true} />);
 
-    // Check for algorithm information sections
-    expect(screen.getByText('Bubble Sort')).toBeInTheDocument();
-    expect(screen.getByText('Selection Sort')).toBeInTheDocument();
-    expect(screen.getByText('Insertion Sort')).toBeInTheDocument();
-    expect(screen.getByText('Merge Sort')).toBeInTheDocument();
-    expect(screen.getByText('Quick Sort')).toBeInTheDocument();
-    expect(screen.getByText('Radix Sort')).toBeInTheDocument();
-    expect(screen.getByText('Bucket Sort')).toBeInTheDocument();
+    // Check for the main heading (h1)
+    const mainHeading = screen.getByRole('heading', { name: /bubble sort/i });
+    expect(mainHeading).toBeInTheDocument();
+
+    // Check for part of the description text
+    expect(
+      screen.getByText(/Bubble Sort is a straightforward sorting algorithm/)
+    ).toBeInTheDocument();
+    expect(screen.getByText('Algorithm')).toBeInTheDocument();
+    expect(screen.getByText('Time Complexity')).toBeInTheDocument();
+    expect(screen.getByText('Space Complexity')).toBeInTheDocument();
+    expect(screen.getByText('Best')).toBeInTheDocument();
+    expect(screen.getByText('Average')).toBeInTheDocument();
+
+    const worstHeaders = screen.getAllByText('Worst');
+    expect(worstHeaders.length).toBeGreaterThan(0);
   });
 
-  it('should display time complexity information', () => {
-    render(
-      <Modal 
-        isOpen={true} 
-        onClose={mockOnClose} 
-        sortingState={mockSortingState} 
-      />
-    );
+  it('has accessibility attributes', () => {
+    render(<Modal {...defaultProps} isOpen={true} />);
 
-    // Check for time complexity information
-    expect(screen.getByText(/Time Complexity/)).toBeInTheDocument();
-    expect(screen.getByText(/Space Complexity/)).toBeInTheDocument();
-  });
-
-  it('should handle keyboard events', async () => {
-    const user = userEvent.setup();
-    
-    render(
-      <Modal 
-        isOpen={true} 
-        onClose={mockOnClose} 
-        sortingState={mockSortingState} 
-      />
-    );
-
-    // Press Escape key
-    await user.keyboard('{Escape}');
-
-    expect(mockOnClose).toHaveBeenCalledTimes(1);
-  });
-
-  it('should render with different sorting states', () => {
-    const sortingState = {
-      ...mockSortingState,
-      algorithm: 'selection_sort',
-      sorting: true,
-      paused: true
-    };
-
-    render(
-      <Modal 
-        isOpen={true} 
-        onClose={mockOnClose} 
-        sortingState={sortingState} 
-      />
-    );
-
-    expect(screen.getByText('About Sorting Algorithms')).toBeInTheDocument();
-  });
-
-  it('should have proper accessibility attributes', () => {
-    render(
-      <Modal 
-        isOpen={true} 
-        onClose={mockOnClose} 
-        sortingState={mockSortingState} 
-      />
-    );
-
+    // Check modal attributes
     const modal = screen.getByRole('dialog');
-    expect(modal).toBeInTheDocument();
     expect(modal).toHaveAttribute('aria-modal', 'true');
+    expect(modal).toHaveAttribute('tabindex', '-1');
+
+    // Check close button in the modal content
+    const closeButtons = screen.getAllByRole('button', {
+      name: /close modal/i,
+    });
+    const closeButton = closeButtons.find(
+      (btn) => btn.className === 'close-modal'
+    );
+    expect(closeButton).toBeInTheDocument();
+
+    // Check overlay button
+    const overlay = closeButtons.find((btn) =>
+      btn.className.includes('overlay')
+    );
+    expect(overlay).toBeInTheDocument();
+    expect(overlay).toHaveAttribute('tabindex', '0');
+  });
+
+  it('updates content when algorithm changes', () => {
+    const { rerender } = render(<Modal {...defaultProps} isOpen={true} />);
+
+    // Check for the main heading (h1)
+    let headings = screen.getAllByRole('heading');
+    let mainHeading = headings.find((h) => h.textContent === 'Bubble Sort');
+    expect(mainHeading).toBeInTheDocument();
+
+    rerender(
+      <Modal
+        {...defaultProps}
+        isOpen={true}
+        sortingState={{ algorithm: 'quick_sort' }}
+      />
+    );
+
+    // Check for the updated heading (h1)
+    headings = screen.getAllByRole('heading');
+    mainHeading = headings.find((h) => h.textContent === 'Quick Sort');
+    expect(mainHeading).toBeInTheDocument();
+
+    // Verify the table still contains the original text
+    expect(screen.getByText('Bubble Sort')).toBeInTheDocument(); // In the table
   });
 });
