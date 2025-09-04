@@ -41,7 +41,7 @@
 - [ ] Safari compatibility
 - [ ] Memory leaks in long-running visualizations
 - [ ] Regular dependency updates
-- [ ] Add build status badge to READM
+- [x] Add build status badge to README
   - If using GitHub Actions for testing/CI, include theworkflow badge
   - Add Codecov coverage badge for test coverage reports
 
