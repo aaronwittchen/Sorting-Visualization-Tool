@@ -13,6 +13,7 @@
 - [ ] Accessibility: screen reader support, keyboard navigation, high contrast
 - [ ] Settings panel with user preferences storage
 - [ ] History and favorites system
+- [ ] Add better descriptions with links (need to switch to another filetype other than .js for that)
 
 ## Technical
 
