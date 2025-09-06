@@ -126,8 +126,7 @@ function Overlay() {
               ) || 'medium'
             }
             onChange={changeSortingSpeed}
-            className='ml-auto text-base-content px-2 py-2 rounded-md cursor-pointer outline-none focus:ring ring-primary'
-            style={{ backgroundColor: '#2b4453' }}
+            className='ml-auto text-base-content px-2 py-3.5 rounded-md cursor-pointer outline-none focus:ring ring-primary bg-primary'
           >
             <option value='slow'>Slow</option>
             <option value='medium'>Medium</option>
