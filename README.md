@@ -111,6 +111,7 @@ Open `http://localhost:5173`
 4. Use speed dropdown to adjust speed
 5. Pause/resume as needed
 6. Click "?" for algorithm information
+7. Click the theme button to change themes
 
 ## Scripts
 
