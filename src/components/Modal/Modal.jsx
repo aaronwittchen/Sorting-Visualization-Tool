@@ -21,16 +21,19 @@ export default function Modal({ isOpen, onClose, sortingState }) {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Manage body scroll and focus
+  // Manage body scroll, focus, and active class
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      document.body.classList.add('active-modal');
       modalRef.current?.focus();
     } else {
       document.body.style.overflow = 'unset';
+      document.body.classList.remove('active-modal');
     }
     return () => {
       document.body.style.overflow = 'unset';
+      document.body.classList.remove('active-modal');
     };
   }, [isOpen]);
 
@@ -55,7 +58,7 @@ export default function Modal({ isOpen, onClose, sortingState }) {
             className='fixed inset-0 w-screen h-screen bg-black/60 z-[1000] cursor-default'
             role='button'
             tabIndex='0'
-            aria-label='Close modal'
+            aria-label='Close modal backdrop'
             onKeyDown={(e) => e.key === 'Enter' && onClose()}
           />
 

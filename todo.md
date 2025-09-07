@@ -26,7 +26,7 @@
 
 - [ ] Interactive tutorials and step-by-step explanation
 - [ ] Quiz mode and algorithm building
-- [ ] Pseudocode display
+- [X] Pseudocode display
 - [ ] Video tutorials and documentation
 
 ## Advanced Features

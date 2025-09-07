@@ -15,21 +15,82 @@ https://github.com/user-attachments/assets/4a68b46e-1270-4553-add3-4a68b7006d7c
 
 ## Features
 
-- 7 sorting algorithms: Bubble, Selection, Insertion, Merge, Quick, Radix, Bucket
-- Real-time animated visualization
-- Interactive controls: start, pause, resume, reset
-- Speed control (slow, medium, fast)
-- Algorithm information modal with complexity details
-- State persistence across sessions
-- Responsive design
-- Comprehensive test suite
+### Sorting Algorithms
+- **7 sorting algorithms** with real-time visualization:
+  - Bubble Sort
+  - Selection Sort
+  - Insertion Sort
+  - Merge Sort
+  - Quick Sort
+  - Radix Sort
+  - Bucket Sort
+
+### Interactive Controls
+- **Visualization Controls**:
+  - Start/Pause/Resume sorting
+  - Reset array generation
+  - Adjustable speed (slow, medium, fast)
+  - Real-time step counter
+  - Swap and comparison counters
+
+### User Experience
+- **Responsive Design**:
+  - Adapts to different screen sizes
+  - Dynamic array size based on viewport width
+  - Touch-friendly controls
+
+### Educational Features
+- **Algorithm Information**:
+  - Detailed descriptions of each algorithm
+  - Time and space complexity analysis
+  - Step-by-step pseudocode
+  - Comparison table of all algorithms
+
+### Customization
+- **Theme Support**:
+  - Multiple color themes (purple, darkPurple, ocean, forest, sunset)
+  - Theme persistence across sessions
+  - System preference detection
+
+### Internationalization
+- **Multi-language Support**:
+  - English and German language options
+  - Easy to add more languages
+
+### Performance
+- **Optimized Visualization**:
+  - Smooth animations
+  - Efficient state management with React Context
+  - Abort and pause/resume functionality
+
+### Developer Experience
+- **Testing**:
+  - Comprehensive test suite with Vitest
+  - Component testing with React Testing Library
+  - Code coverage reporting
+  - CI/CD integration
 
 ## Tech Stack
 
-- React 18.2.0 + Vite
-- Tailwind CSS
-- Vitest + React Testing Library
-- Context API for state management
+### Core
+- **React 18.2.0** - Frontend library for building user interfaces
+- **Vite** - Next Generation Frontend Tooling
+- **Tailwind CSS** - Utility-first CSS framework
+- **DaisyUI** - Component library for Tailwind CSS
+
+### State Management
+- **React Context API** - For global state management
+- **Custom Hooks** - For reusable logic
+
+### Testing
+- **Vitest** - Fast unit testing framework
+- **React Testing Library** - For component testing
+- **Codecov** - Code coverage reporting
+
+### Build & Deploy
+- **Vite** - Build tool and dev server
+- **GitHub Actions** - CI/CD pipeline
+- **Vercel** - Deployment platform
 
 ## Installation
 
@@ -61,22 +122,45 @@ npm run test:watch   # Watch mode
 npm run test:coverage # Coverage report
 ```
 
+## Testing
+
+The application includes comprehensive test coverage with a focus on reliability and maintainability:
+
+### Algorithm Tests
+- Unit tests for all 7 sorting algorithms
+- Edge case testing
+- Performance validation
+
+### Component Tests
+- Interactive component testing
+- State management testing
+- Event handling verification
+- Accessibility compliance
+
+### Integration Tests
+- State management integration
+- Component interaction testing
+- End-to-end workflow testing
+
 ## Project Structure
 
 ```
 src/
 ├── components/          # React components
+│   ├── Modal/          # Algorithm information modal
+│   ├── Overlay.jsx     # Main UI component
+│   └── ThemeSelector.jsx # Theme switching component
 ├── contexts/           # State management
+│   └── Context.jsx     # Main application context
 ├── helpers/            # Algorithms and utilities
+│   ├── sortingAlgorithms.js  # Sorting algorithm implementations
+│   ├── math.js         # Math utilities
+│   └── speedConfig.js  # Animation speed configurations
 ├── data/               # Algorithm descriptions
-└── __tests__/          # Test files
+│   ├── aboutAlgorithm.en.json  # English algorithm info
+│   └── aboutAlgorithm.de.json  # German algorithm info
+├── __tests__/          # Test files
+│   ├── components/     # Component tests
+│   └── helpers/        # Algorithm tests
+└── assets/             # Static assets
 ```
-
-## Testing
-
-Comprehensive test coverage including:
-
-- Unit tests for all algorithms
-- Component tests with user interactions
-- Integration tests for state management
-- Accessibility tests

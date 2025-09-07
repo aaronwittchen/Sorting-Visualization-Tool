@@ -107,40 +107,53 @@ export const selectionSort = async (array, changeBar, getDelay, signal, pauseCon
 export const insertionSort = async (array, changeBar, getDelay, signal, pauseControllerRef) => {
     for (let i = 1; i < array.length; i++) {
         if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
-        // Find the correct position for current element
-        let j = i - 1;
+        
         const current = array[i].value;
+        let j = i - 1;
+        
+        // Highlight the current element being inserted
         changeBar(i, { state: "selected" }, true, false, false);
         
-        // Shift elements to make space for insertion
-        while (j > -1) {
-            // Compare current with previous element
-            changeBar(j, { state: "comparing" }, true, false, true); // step and comparison
+        // Find the correct position to insert the current element
+        while (j >= 0 && array[j].value > current) {
+            if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
+            
+            // Highlight comparison
+            changeBar(j, { state: "comparing" }, true, false, true);
             await checkPause(pauseControllerRef);
             await awaitTimeout(getDelay());
             
-            if (current >= array[j].value) {
-                changeBar(j, { state: "idle" }, false, false, false);
-                j++; // Adjust j back to the correct position
-                break;
-            }
-            
             // Shift element to the right
             array[j + 1].value = array[j].value;
-            changeBar(j + 1, { value: array[j].value, state: "selected" }, true, true, false); // step and swap (shift)
-            changeBar(j, { value: array[j].value, state: "idle" }, false, false, false);
+            changeBar(j + 1, { 
+                value: array[j].value, 
+                state: j === i - 1 ? "selected" : "idle" 
+            }, true, true, false);
+            
+            // Reset the state of the current position
+            changeBar(j, { state: "idle" }, false, false, false);
             
             j--;
             await checkPause(pauseControllerRef);
             await awaitTimeout(getDelay());
-            
-            if (j >= 0) {
-                changeBar(j, { state: "comparing" }, false, false, false);
-            }
         }
-
-        array[j + 1].value = current;
-        changeBar(j + 1, { value: current, state: "idle" }, true); // Step for insertion
+        
+        // Insert the current element in its correct position
+        if (j + 1 !== i) {
+            array[j + 1].value = current;
+            changeBar(j + 1, { 
+                value: current, 
+                state: "idle" 
+            }, true, true, false);
+        } else {
+            // If no shifting was needed, just update the state
+            changeBar(i, { state: "idle" }, false, false, false);
+        }
+    }
+    
+    // Ensure all bars are in idle state at the end
+    for (let i = 0; i < array.length; i++) {
+        changeBar(i, { state: "idle" }, false, false, false);
     }
 };
 

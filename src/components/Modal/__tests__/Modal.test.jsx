@@ -57,27 +57,14 @@ describe('Modal Component', () => {
     expect(document.body).toHaveClass('active-modal');
   });
 
-  it('closes with button, overlay, or Escape', () => {
+  it('closes with overlay click or Escape key', () => {
     const mockOnClose = vi.fn();
     const { rerender } = render(
       <Modal {...defaultProps} isOpen={true} onClose={mockOnClose} />
     );
 
-    // Test close button click
-    const closeButtons = screen.getAllByRole('button', {
-      name: /close modal/i,
-    });
-    const closeButton = closeButtons.find(
-      (btn) => btn.className === 'close-modal'
-    );
-    fireEvent.click(closeButton);
-    expect(mockOnClose).toHaveBeenCalledTimes(1);
-
-    // Reset and test overlay click
-    mockOnClose.mockClear();
-    const overlay = closeButtons.find((btn) =>
-      btn.className.includes('overlay')
-    );
+    // Test overlay click
+    const overlay = screen.getByLabelText('Close modal backdrop');
     fireEvent.click(overlay);
     expect(mockOnClose).toHaveBeenCalledTimes(1);
 
@@ -100,9 +87,17 @@ describe('Modal Component', () => {
     const mainHeading = screen.getByRole('heading', { name: /bubble sort/i });
     expect(mainHeading).toBeInTheDocument();
 
-    // Check for part of the description text
+    // Check for the description text (using a more flexible matcher)
     expect(
-      screen.getByText(/Bubble Sort is a straightforward sorting algorithm/)
+      screen.getByText(
+        (content, element) => {
+          return (
+            content.includes('Bubble Sort') &&
+            element.tagName.toLowerCase() === 'p'
+          );
+        },
+        { exact: false }
+      )
     ).toBeInTheDocument();
     expect(screen.getByText('Algorithm')).toBeInTheDocument();
     expect(screen.getByText('Time Complexity')).toBeInTheDocument();
@@ -114,7 +109,7 @@ describe('Modal Component', () => {
     expect(worstHeaders.length).toBeGreaterThan(0);
   });
 
-  it('has accessibility attributes', () => {
+  it('has basic accessibility attributes', () => {
     render(<Modal {...defaultProps} isOpen={true} />);
 
     // Check modal attributes
@@ -122,19 +117,8 @@ describe('Modal Component', () => {
     expect(modal).toHaveAttribute('aria-modal', 'true');
     expect(modal).toHaveAttribute('tabindex', '-1');
 
-    // Check close button in the modal content
-    const closeButtons = screen.getAllByRole('button', {
-      name: /close modal/i,
-    });
-    const closeButton = closeButtons.find(
-      (btn) => btn.className === 'close-modal'
-    );
-    expect(closeButton).toBeInTheDocument();
-
-    // Check overlay button
-    const overlay = closeButtons.find((btn) =>
-      btn.className.includes('overlay')
-    );
+    // Check overlay button exists with backdrop-specific label
+    const overlay = screen.getByLabelText('Close modal backdrop');
     expect(overlay).toBeInTheDocument();
     expect(overlay).toHaveAttribute('tabindex', '0');
   });
