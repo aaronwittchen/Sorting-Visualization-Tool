@@ -3,7 +3,8 @@
 ## Core Functionality
 
 - [ ] Add more sorting algorithms: Heap Sort, Shell Sort, Counting Sort, Tim Sort, Cocktail Sort
-- [ ] Enhanced visualization: different styles (bars/circles/numbers), color themes, continuous speed control, step-by-step mode
+- [X] Enhanced visualization: different styles (bars/circles/numbers), color themes
+- [ ] Step-by-step mode
 - [ ] Data input options: custom arrays, different distributions, variable size (10-200), file import
 - [ ] Algorithm comparison: side-by-side view, performance metrics, real-time graphs
 
@@ -13,14 +14,13 @@
 - [ ] Accessibility: screen reader support, keyboard navigation, high contrast
 - [ ] Settings panel with user preferences storage
 - [ ] History and favorites system
-- [ ] Add better descriptions with links (need to switch to another filetype other than .js for that)
+- [ ] Add better descriptions with links
 
 ## Technical
 
 - [ ] Performance optimization: virtual scrolling, Web Workers, WebGL rendering
 - [ ] Code quality: TypeScript migration, component extraction, better testing
 - [ ] CI/CD pipeline setup
-- [ ] Backend integration for user accounts
 
 ## Educational Features
 
@@ -32,8 +32,6 @@
 ## Advanced Features
 
 - [ ] Multi-language support (i18n)
-- [ ] Social features: sharing, community challenges
-- [ ] External integrations: GitHub, educational platforms
 - [ ] Parallel and distributed sorting algorithms
 
 ## Bug Fixes

@@ -36,6 +36,9 @@ function Context({ children }) {
     sorting: false,
     paused: false,
     arraySize: getArraySize(),
+    stepCount: 0,
+    swapCount: 0,
+    comparisonCount: 0, // Add comparison counter to state
   });
 
   // Refs for aborting and pausing sorting
@@ -72,12 +75,15 @@ function Context({ children }) {
   }, []);
 
   // Update a single bar in the array (used by sorting algorithms)
-  const changeBar = (index, payload) => {
+  const changeBar = (index, payload, incrementStep = false, incrementSwap = false, incrementComparison = false) => {
     setSortingState((prev) => ({
       ...prev,
       array: prev.array.map((item, i) =>
         i === index ? { ...item, ...payload } : item
       ),
+      stepCount: incrementStep ? prev.stepCount + 1 : prev.stepCount,
+      swapCount: incrementSwap ? prev.swapCount + 1 : prev.swapCount,
+      comparisonCount: incrementComparison ? prev.comparisonCount + 1 : prev.comparisonCount,
     }));
   };
 
@@ -101,6 +107,9 @@ function Context({ children }) {
       sorting: false,
       paused: false,
       arraySize: size,
+      stepCount: 0, // Reset step counter when generating new array
+      swapCount: 0, // Reset swap counter when generating new array
+      comparisonCount: 0, // Reset comparison counter when generating new array
     }));
     // Reset pause controller
     pauseControllerRef.current = null;
@@ -144,6 +153,9 @@ function Context({ children }) {
       sorting: true,
       paused: false,
       sorted: false,
+      stepCount: 0, // Reset step counter when starting new sort
+      swapCount: 0, // Reset swap counter when starting new sort
+      comparisonCount: 0, // Reset comparison counter when starting new sort
     }));
     abortControllerRef.current = new AbortController();
     pauseControllerRef.current = new AbortController();

@@ -19,20 +19,24 @@ export const bubbleSort = async (array, changeBar, getDelay, signal, pauseContro
             if (signal.aborted) {
                 throw new DOMException('Aborted', 'AbortError');
             }
-            // Highlight compared bars
-            changeBar(j, { state: "selected" });
-            changeBar(j + 1, { state: "selected" });
-            
+            // Compare elements
+            changeBar(j, { state: "selected" }, true, false, true); // step and comparison
+            changeBar(j + 1, { state: "selected" }, true, false, false); // step only
             await checkPause(pauseControllerRef);
             await awaitTimeout(getDelay());
-
+            
+            // Increment step counter for comparison
+            changeBar(j, {}, true, false, false);
+            changeBar(j + 1, {}, true, false, false);
+            
             // Swap if needed
             if (array[j].value > array[j + 1].value) {
                 let temp = array[j].value;
                 array[j].value = array[j + 1].value;
-                changeBar(j, { value: array[j].value });
+                changeBar(j, { value: array[j].value }, true, true, false); // step and swap
+                changeBar(j, { value: array[j].value }, true, true); // step and swap
                 array[j + 1].value = temp;
-                changeBar(j + 1, { value: temp });
+                changeBar(j + 1, { value: temp }, true, false); // Only step, not swap
                 await awaitTimeout(getDelay());
             }
 
@@ -55,19 +59,26 @@ export const selectionSort = async (array, changeBar, getDelay, signal, pauseCon
     for (let i = 0; i < array.length; i++) {
         if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
         let min = i;
-        changeBar(min, { state: "selected" });
-
+        changeBar(min, { state: "selected" }, true, false, false);
+        
         for (let j = i + 1; j < array.length; j++) {
-            changeBar(j, { state: "selected" });
+            if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
+            
+            // Highlight compared bars and count comparison
+            changeBar(j, { state: "selected" }, true, false, true); // step and comparison
             await checkPause(pauseControllerRef);
             await awaitTimeout(getDelay());
-
+            
+            // Reset highlight
+            changeBar(j, {}, true, false, false);
+            
             if (array[j].value < array[min].value) {
-                changeBar(min, { state: "idle" });
+                // Reset previous min
+                changeBar(min, { state: "idle" }, false, false, false);
                 min = j;
-                changeBar(min, { state: "selected" });
+                changeBar(min, { state: "selected" }, true, false, false);
             } else {
-                changeBar(j, { state: "idle" });
+                changeBar(j, { state: "idle" }, false, false, false);
             }
         }
 
@@ -75,9 +86,9 @@ export const selectionSort = async (array, changeBar, getDelay, signal, pauseCon
         if (min !== i) {
             let temp = array[i].value;
             array[i].value = array[min].value;
-            changeBar(i, { value: array[i].value, state: "idle" });
+            changeBar(i, { value: array[i].value, state: "idle" }, true, true); // step and swap
             array[min].value = temp;
-            changeBar(min, { value: temp, state: "idle" });
+            changeBar(min, { value: temp, state: "idle" }, true, true); // step and swap
         } else {
             changeBar(i, { state: "idle" });
             changeBar(min, { state: "idle" });
@@ -96,23 +107,40 @@ export const selectionSort = async (array, changeBar, getDelay, signal, pauseCon
 export const insertionSort = async (array, changeBar, getDelay, signal, pauseControllerRef) => {
     for (let i = 1; i < array.length; i++) {
         if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
-        let current = array[i].value;
+        // Find the correct position for current element
         let j = i - 1;
-
-        changeBar(i, { value: current, state: "selected" });
-
+        const current = array[i].value;
+        changeBar(i, { state: "selected" }, true, false, false);
+        
         // Shift elements to make space for insertion
-        while (j > -1 && current < array[j].value) {
+        while (j > -1) {
+            // Compare current with previous element
+            changeBar(j, { state: "comparing" }, true, false, true); // step and comparison
+            await checkPause(pauseControllerRef);
+            await awaitTimeout(getDelay());
+            
+            if (current >= array[j].value) {
+                changeBar(j, { state: "idle" }, false, false, false);
+                j++; // Adjust j back to the correct position
+                break;
+            }
+            
+            // Shift element to the right
             array[j + 1].value = array[j].value;
-            changeBar(j + 1, { value: array[j].value, state: "selected" });
+            changeBar(j + 1, { value: array[j].value, state: "selected" }, true, true, false); // step and swap (shift)
+            changeBar(j, { value: array[j].value, state: "idle" }, false, false, false);
+            
             j--;
             await checkPause(pauseControllerRef);
             await awaitTimeout(getDelay());
-            changeBar(j + 2, { value: array[j + 2].value, state: "idle" });
+            
+            if (j >= 0) {
+                changeBar(j, { state: "comparing" }, false, false, false);
+            }
         }
 
         array[j + 1].value = current;
-        changeBar(j + 1, { value: current, state: "idle" });
+        changeBar(j + 1, { value: current, state: "idle" }, true); // Step for insertion
     }
 };
 
@@ -125,14 +153,18 @@ const mergeSortMerger = async (array, start, middle, end, changeBar, getDelay, p
         k = start;
 
     while (i < left.length && j < right.length) {
+        // Highlight the elements being compared
+        if (k > 0) changeBar(k - 1, { state: "idle" }, false, false, false);
+        changeBar(k, { state: "comparing" }, true, false, true); // step and comparison
+        
         if (left[i] < right[j]) {
             array[k].value = left[i];
-            changeBar(k, { value: left[i], state: "selected" });
+            changeBar(k, { value: left[i], state: "selected" }, true, true, false); // step and swap (assignment)
             k++;
             i++;
         } else {
             array[k].value = right[j];
-            changeBar(k, { value: right[j], state: "selected" });
+            changeBar(k, { value: right[j], state: "selected" }, true, true, false); // step and swap (assignment)
             k++;
             j++;
         }
@@ -142,7 +174,7 @@ const mergeSortMerger = async (array, start, middle, end, changeBar, getDelay, p
 
     while (i < left.length) {
         array[k].value = left[i];
-        changeBar(k, { value: left[i], state: "selected" });
+        changeBar(k, { value: left[i], state: "selected" }, true, true); // step and swap (assignment)
         k++;
         i++;
         await checkPause(pauseControllerRef);
@@ -151,7 +183,7 @@ const mergeSortMerger = async (array, start, middle, end, changeBar, getDelay, p
 
     while (j < right.length) {
         array[k].value = right[j];
-        changeBar(k, { value: right[j], state: "selected" });
+        changeBar(k, { value: right[j], state: "selected" }, true, true); // step and swap (assignment)
         k++;
         j++;
         await checkPause(pauseControllerRef);
@@ -196,16 +228,33 @@ const quickSortHelper = async (array, start, end, changeBar, getDelay, signal, p
     let j = end;
 
     while (i <= j) {
-        while (array[i].value < pivot) i++;
-        while (array[j].value > pivot) j--;
+        // Find element on the left that should be on the right
+        changeBar(i, { state: "comparing" }, true, false, true); // step and comparison
+        while (i <= end && array[i].value < pivot) {
+            changeBar(i, { state: "idle" }, false, false, false);
+            i++;
+            if (i <= end) changeBar(i, { state: "comparing" }, true, false, true); // step and comparison
+        }
+        
+        // Find element on the right that should be on the left
+        changeBar(j, { state: "comparing" }, true, false, true); // step and comparison
+        while (j >= start && array[j].value > pivot) {
+            changeBar(j, { state: "idle" }, false, false, false);
+            j--;
+            if (j >= start) changeBar(j, { state: "comparing" }, true, false, true); // step and comparison
+        }
 
         if (i <= j) {
+            // Increment step counter for swap
+            changeBar(i, { state: "selected" }, true, false);
+            changeBar(j, { state: "selected" }, true, false);
+            
             let temp = array[i].value;
             array[i].value = array[j].value;
             array[j].value = temp;
             
-            changeBar(i, { value: array[i].value, state: "selected" });
-            changeBar(j, { value: array[j].value, state: "selected" });
+            changeBar(i, { value: array[i].value, state: "selected" }, true, true); // step and swap
+            changeBar(j, { value: array[j].value, state: "selected" }, true, true); // step and swap
 
             await checkPause(pauseControllerRef);
             await awaitTimeout(getDelay());
@@ -242,25 +291,46 @@ export const quickSort = async (array, changeBar, getDelay, signal, pauseControl
  * @param {Object} pauseControllerRef - For pausing
  */
 export const radixSort = async (array, changeBar, getDelay, signal, pauseControllerRef) => {
-    let arr = array.map((item) => item.value);
-    let maxDigitCount = mostDigits(arr);
+    const maxDigits = mostDigits(array.map(item => item.value));
 
-    for (let k = 0; k < maxDigitCount; k++) {
+    for (let k = 0; k < maxDigits; k++) {
         if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
+        
+        // Create 10 buckets (0-9)
         let digitBuckets = Array.from({ length: 10 }, () => []);
-        for (let i = 0; i < arr.length; i++) {
-            let digit = getDigit(arr[i], k);
-            digitBuckets[digit].push(arr[i]);
-        }
-
-        arr = [].concat(...digitBuckets);
-
-        for (let i = 0; i < arr.length; i++) {
-            array[i].value = arr[i];
-            changeBar(i, { value: arr[i], state: "selected" });
+        
+        // Place each number in the corresponding bucket
+        for (let i = 0; i < array.length; i++) {
+            const digit = getDigit(array[i].value, k);
+            digitBuckets[digit].push(array[i].value);
+            
+            // Visualize the current digit being considered
+            changeBar(i, { state: "selected" }, true, false, false);
             await checkPause(pauseControllerRef);
             await awaitTimeout(getDelay());
-            changeBar(i, { value: arr[i], state: "idle" });
+            changeBar(i, { state: "idle" }, false, false, false);
+            
+            // Count the comparison for digit extraction
+            changeBar(i, {}, true, false, true);
+        }
+        
+        // Flatten buckets back into array
+        let index = 0;
+        for (let i = 0; i < digitBuckets.length; i++) {
+            for (let j = 0; j < digitBuckets[i].length; j++) {
+                array[index].value = digitBuckets[i][j];
+                changeBar(index, { 
+                    value: array[index].value, 
+                    state: "selected" 
+                }, true, true); // step and swap (assignment)
+                await checkPause(pauseControllerRef);
+                await awaitTimeout(getDelay());
+                changeBar(index, { 
+                    value: array[index].value, 
+                    state: j === digitBuckets[i].length - 1 && i === digitBuckets.length - 1 ? "idle" : "sorted" 
+                });
+                index++;
+            }
         }
     }
 };
@@ -278,36 +348,79 @@ export const bucketSort = async (array, changeBar, getDelay, signal, pauseContro
     let arr = array.map((item) => item.value);
     if (arr.length === 0) return;
 
-    // Determine min and max values
-    let minValue = Math.min(...arr);
-    let maxValue = Math.max(...arr);
+    // Determine min and max values from the array
+    let minValue = array[0].value;
+    let maxValue = array[0].value;
+    
+    // Find min and max values
+    for (let i = 1; i < array.length; i++) {
+        if (array[i].value < minValue) minValue = array[i].value;
+        if (array[i].value > maxValue) maxValue = array[i].value;
+    }
     
     // Initialize buckets
-    let bucketCount = Math.floor((maxValue - minValue) / bucketSize) + 1;
-    let buckets = Array.from({ length: bucketCount }, () => []);
+    const range = maxValue - minValue + 1;
+    const bucketCount = Math.min(Math.ceil(range / bucketSize), 10); // Limit to 10 buckets max
+    const buckets = Array.from({ length: bucketCount }, () => []);
 
-    // Distribute input array values into buckets
-    arr.forEach(value => {
-        let bucketIndex = Math.floor((value - minValue) / bucketSize);
-        buckets[bucketIndex].push(value);
-    });
-
-    // Sort buckets and concatenate back into the array
-    arr.length = 0;
-    for (let i = 0; i < buckets.length; i++) {
-        buckets[i].sort((a, b) => a - b);
-        for (let j = 0; j < buckets[i].length; j++) {
-            arr.push(buckets[i][j]);
-        }
-    }
-
-    // Update UI to reflect sorting progress
-    for (let i = 0; i < arr.length; i++) {
+    // Distribute elements into buckets
+    for (let i = 0; i < array.length; i++) {
         if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
-        array[i].value = arr[i];
-        changeBar(i, { value: arr[i], state: "selected" });
+        
+        // Count the comparison for bucket placement
+        changeBar(i, { state: "comparing" }, true, false, true);
         await checkPause(pauseControllerRef);
         await awaitTimeout(getDelay());
-        changeBar(i, { value: arr[i], state: "idle" });
+        
+        // Calculate bucket index (0 to bucketCount-1)
+        const normalizedValue = array[i].value - minValue;
+        let bucketIndex = Math.floor((normalizedValue / range) * bucketCount);
+        
+        // Ensure index is within bounds
+        bucketIndex = Math.min(bucketCount - 1, Math.max(0, bucketIndex));
+        
+        // Add to bucket
+        buckets[bucketIndex].push(array[i].value);
+        
+        // Visualize the current element being placed in a bucket
+        changeBar(i, { state: "selected" }, true, false, false);
+        await checkPause(pauseControllerRef);
+        await awaitTimeout(getDelay());
+        changeBar(i, { state: "idle" }, false, false, false);
+    }
+
+    // Sort each bucket and update the array
+    let index = 0;
+    for (let i = 0; i < buckets.length; i++) {
+        if (signal.aborted) throw new DOMException('Aborted', 'AbortError');
+        
+        // Skip empty buckets
+        if (buckets[i].length === 0) continue;
+        
+        // Sort the current bucket (this is done in-place for visualization)
+        buckets[i].sort((a, b) => a - b);
+        
+        // Update the array with the sorted bucket
+        for (let j = 0; j < buckets[i].length; j++) {
+            if (index >= array.length) break; // Safety check
+            
+            array[index].value = buckets[i][j];
+            changeBar(index, { 
+                value: buckets[i][j], 
+                state: "selected" 
+            }, true, true, false); // step and swap (assignment)
+            
+            await checkPause(pauseControllerRef);
+            await awaitTimeout(getDelay());
+            
+            // Determine the state - mark as sorted unless it's the last element
+            const isLastElement = (j === buckets[i].length - 1 && i === buckets.length - 1);
+            changeBar(index, { 
+                value: buckets[i][j],
+                state: isLastElement ? "idle" : "sorted"
+            }, false, false, false);
+            
+            index++;
+        }
     }
 };

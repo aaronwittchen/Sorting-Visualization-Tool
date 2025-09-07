@@ -1,0 +1,79 @@
+{
+  "bubble_sort": {
+    "name": "Bubble Sort",
+    "time_complexity": {
+      "best": ["O(n)", "amber-500"],
+      "average": ["O(n²)", "rose-500"],
+      "worst": ["O(n²)", "rose-500"]
+    },
+    "space_complexity": ["O(1)", "teal-800"],
+    "description": "\nSchlüssel-Schritte:\n1. Beginne am Anfang der Liste.\n2. Vergleiche jedes Paar benachbarter Elemente.\n3. Tausche sie, wenn sie in der falschen Reihenfolge sind.\n4. Fahre fort, bis das Ende der Liste erreicht ist.\n5. Wiederhole den Vorgang für den verbleibenden unsortierten Teil, bis keine Vertauschungen mehr nötig sind.\n\nEffizienz:\nIm Worst-Case und Durchschnittsfall beträgt die Zeitkomplexität O(n²), im Best-Case (bereits sortiert) O(n). Speicherkomplexität ist O(1). Bubble Sort wird hauptsächlich zu Lehrzwecken oder für kleine Datensätze verwendet.\n\nHinweise:\nEinfach zu implementieren, aber ineffizient für große Datensätze. Leicht optimierte Versionen können früher stoppen, wenn in einem Durchgang keine Vertauschungen auftreten.",
+    "pseudocode": "BubbleSort(array):\n    n = length of array\n    for i from 0 to n-1:\n        swapped = false\n        for j from 0 to n-i-2:\n            if array[j] > array[j+1]:\n                swap array[j] and array[j+1]\n                swapped = true\n        if swapped == false:\n            break"
+  },
+  "selection_sort": {
+    "name": "Selection Sort",
+    "time_complexity": {
+      "best": ["O(n²)", "rose-500"],
+      "average": ["O(n²)", "rose-500"],
+      "worst": ["O(n²)", "rose-500"]
+    },
+    "space_complexity": ["O(1)", "teal-800"],
+    "description": "\nSchlüssel-Schritte:\n1. Beginne mit dem ersten Element des unsortierten Teils.\n2. Finde das Minimum im unsortierten Teil.\n3. Tausche es mit dem ersten unsortierten Element.\n4. Verschiebe die Grenze des sortierten Teils um einen Schritt nach vorne.\n5. Wiederhole, bis die gesamte Liste sortiert ist.\n\nEffizienz:\nZeitkomplexität ist in allen Fällen O(n²); Speicherkomplexität O(1). Benötigt weniger Vertauschungen als Bubble Sort, aber immer noch ineffizient für große Datensätze.\n\nHinweise:\nGut für kleine Datensätze oder wenn Vertauschungen minimiert werden sollen. Standardmäßig nicht stabil.",
+    "pseudocode": "SelectionSort(array):\n    n = length of array\n    for i from 0 to n-1:\n        min_index = i\n        for j from i+1 to n-1:\n            if array[j] < array[min_index]:\n                min_index = j\n        if min_index != i:\n            swap array[i] and array[min_index]"
+  },
+  "insertion_sort": {
+    "name": "Insertion Sort",
+    "time_complexity": {
+      "best": ["O(n)", "amber-500"],
+      "average": ["O(n²)", "rose-500"],
+      "worst": ["O(n²)", "rose-500"]
+    },
+    "space_complexity": ["O(1)", "teal-800"],
+    "description": "\nSchlüssel-Schritte:\n1. Gehe davon aus, dass das erste Element sortiert ist.\n2. Nimm das nächste Element und vergleiche es mit dem sortierten Teil.\n3. Verschiebe größere Elemente im sortierten Teil einen Schritt nach rechts.\n4. Füge das aktuelle Element an der richtigen Position ein.\n5. Wiederhole dies für alle Elemente.\n\nEffizienz:\nBest-Case Zeitkomplexität O(n), Worst-Case O(n²). Speicherkomplexität O(1). Funktioniert gut für kleine oder fast sortierte Datensätze.\n\nHinweise:\nStabiler Algorithmus, einfach zu implementieren, oft verwendet für kleine Datensätze oder als Teil hybrider Algorithmen wie TimSort.",
+    "pseudocode": "InsertionSort(array):\n    n = length of array\n    for i from 1 to n-1:\n        key = array[i]\n        j = i - 1\n        while j >= 0 and array[j] > key:\n            array[j+1] = array[j]\n            j = j - 1\n        array[j+1] = key"
+  },
+  "merge_sort": {
+    "name": "Merge Sort",
+    "time_complexity": {
+      "best": ["O(n log n)", "amber-500"],
+      "average": ["O(n log n)", "amber-500"],
+      "worst": ["O(n log n)", "amber-500"]
+    },
+    "space_complexity": ["O(n)", "amber-500"],
+    "description": "\nSchlüssel-Schritte:\n1. Teile die Liste rekursiv in zwei Hälften, bis jede Teilliste ein Element enthält.\n2. Führe die Teillisten durch Vergleichen zusammen.\n3. Führe den Vorgang fort, bis die gesamte Liste sortiert ist.\n\nEffizienz:\nZeitkomplexität O(n log n); Speicherkomplexität O(n) aufgrund temporärer Arrays.\n\nHinweise:\nStabil und effizient für große Datensätze. Bevorzugt für verknüpfte Listen oder Datensätze, bei denen Stabilität wichtig ist.",
+    "pseudocode": "MergeSort(array):\n    if length(array) > 1:\n        mid = length(array) // 2\n        left = array[0..mid-1]\n        right = array[mid..end]\n        MergeSort(left)\n        MergeSort(right)\n        merge left and right into array"
+  },
+  "quick_sort": {
+    "name": "Quick Sort",
+    "time_complexity": {
+      "best": ["O(n log n)", "amber-500"],
+      "average": ["O(n log n)", "amber-500"],
+      "worst": ["O(n²)", "rose-500"]
+    },
+    "space_complexity": ["O(log n)", "teal-800"],
+    "description": "\nSchlüssel-Schritte:\n1. Wähle ein Pivot-Element (erstes, letztes, zufällig oder Median).\n2. Teile die Elemente: kleiner als Pivot links, größer rechts.\n3. Wende Quick Sort rekursiv auf linke und rechte Teillisten an.\n4. Stoppe, wenn Teillisten weniger als zwei Elemente enthalten.\n\nEffizienz:\nDurchschnittliche Zeitkomplexität O(n log n), Worst-Case O(n²) bei schlechter Pivot-Wahl. Speicherkomplexität O(log n).\n\nHinweise:\nSehr effizient für große Datensätze. Leistung verbessert sich bei guter Pivot-Wahl.",
+    "pseudocode": "QuickSort(array, low, high):\n    if low < high:\n        pi = partition(array, low, high)\n        QuickSort(array, low, pi-1)\n        QuickSort(array, pi+1, high)\n\npartition(array, low, high):\n    pivot = array[high]\n    i = low - 1\n    for j from low to high-1:\n        if array[j] <= pivot:\n            i = i + 1\n            swap array[i] and array[j]\n    swap array[i+1] and array[high]\n    return i+1"
+  },
+  "radix_sort": {
+    "name": "Radix Sort",
+    "time_complexity": {
+      "best": ["O(nk)", "teal-800"],
+      "average": ["O(nk)", "teal-800"],
+      "worst": ["O(nk)", "teal-800"]
+    },
+    "space_complexity": ["O(n + k)", "amber-500"],
+    "description": "\nSchlüssel-Schritte:\n1. Bestimme die maximale Anzahl an Ziffern im Datensatz.\n2. Verteilen der Elemente in Buckets nach der aktuellen Ziffer.\n3. Sammle die Elemente aus den Buckets in der Reihenfolge.\n4. Gehe zur nächsten Ziffer und wiederhole.\n5. Wiederhole, bis alle Ziffern verarbeitet sind.\n\nEffizienz:\nZeitkomplexität O(nk), Speicherkomplexität O(n + k). Effizient, wenn k klein im Vergleich zu n ist.\n\nHinweise:\nNicht-vergleichender, stabiler Algorithmus. Funktioniert am besten mit ganzen Zahlen oder Zeichenketten fester Länge.",
+    "pseudocode": "RadixSort(array):\n    max_digits = number of digits in the largest element\n    for digit from least to most significant:\n        create buckets for each digit\n        place elements in buckets based on current digit\n        collect elements from buckets back into array"
+  },
+  "bucket_sort": {
+    "name": "Bucket Sort",
+    "time_complexity": {
+      "best": ["O(n + k)", "teal-800"],
+      "average": ["O(n + n log(n/k))", "amber-500"],
+      "worst": ["O(n²)", "rose-500"]
+    },
+    "space_complexity": ["O(n + k)", "amber-500"],
+    "description": "\nSchlüssel-Schritte:\n1. Bestimme den Datenbereich und erstelle geeignete Buckets.\n2. Verteilen der Elemente auf die Buckets.\n3. Sortiere jeden Bucket einzeln (z.B. mit Insertion Sort).\n4. Führe alle Buckets zusammen, um das sortierte Array zu erhalten.\n\nEffizienz:\nZeitkomplexität O(n + k) bei gleichmäßig verteilten Daten, Worst-Case O(n²). Speicherkomplexität O(n + k).\n\nHinweise:\nStabil, wenn interne Bucket-Sort stabil ist. Effektiv für Fließkommazahlen und gleichmäßig verteilte Daten.",
+    "pseudocode": "BucketSort(array):\n    create k buckets\n    for each element in array:\n        put element into appropriate bucket\n    for each bucket:\n        sort bucket\n    concatenate all buckets into array"
+  }
+}

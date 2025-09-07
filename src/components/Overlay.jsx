@@ -96,42 +96,92 @@ function Overlay() {
           ))}
         </div>
 
+        {/* Counters */}
+        <div className='mb-4 text-center flex justify-center gap-8'>
+          <div className='text-2xl font-bold text-base-content'>
+            Steps:{' '}
+            <span
+              key={`steps-${sortingState.stepCount}`}
+              className='text-primary inline-block animate-pulse transition-all duration-300 transform scale-110'
+              onAnimationEnd={(e) => {
+                e.target.classList.remove('animate-pulse', 'scale-110');
+                e.target.classList.add('scale-100');
+              }}
+            >
+              {sortingState.stepCount}
+            </span>
+          </div>
+          <div className='text-2xl font-bold text-base-content'>
+            Comparisons:{' '}
+            <span
+              key={`comparisons-${sortingState.comparisonCount}`}
+              className='text-accent inline-block animate-pulse transition-all duration-300 transform scale-110'
+              onAnimationEnd={(e) => {
+                e.target.classList.remove('animate-pulse', 'scale-110');
+                e.target.classList.add('scale-100');
+              }}
+            >
+              {sortingState.comparisonCount}
+            </span>
+          </div>
+          <div className='text-2xl font-bold text-base-content'>
+            Swaps:{' '}
+            <span
+              key={`swaps-${sortingState.swapCount}`}
+              className='text-success inline-block animate-pulse transition-all duration-300 transform scale-110'
+              onAnimationEnd={(e) => {
+                e.target.classList.remove('animate-pulse', 'scale-110');
+                e.target.classList.add('scale-100');
+              }}
+            >
+              {sortingState.swapCount}
+            </span>
+          </div>
+        </div>
+
         {/* Controls: Start/Pause/Resume, Reset, Speed */}
-        <div className='flex items-center gap-4 max-w-3xl mb-8'>
-          {!sortingState.sorting ? (
-            <button
-              onClick={startVisualizing}
-              className='relative inline-block no-underline rounded-md border border-primary bg-primary text-center transition-all duration-100 hover:bg-secondary hover:border-secondary active:shadow-[0px_2px_0px_#b0a8b9] active:relative active:top-1 px-4 py-2.5 text-base-content'
-            >
-              Start
-            </button>
-          ) : (
-            <button
-              onClick={pauseResumeSorting}
-              className='relative inline-block no-underline rounded-md border border-primary bg-primary text-center transition-all duration-100 hover:bg-secondary hover:border-secondary active:shadow-[0px_2px_0px_#b0a8b9] active:relative active:top-1 px-4 py-2.5 text-base-content'
-            >
-              {sortingState.paused ? 'Resume' : 'Pause'}
-            </button>
-          )}
-          <button
-            onClick={generateSortingArray}
-            className='bg-secondary text-base-content px-5 py-3 rounded-md hover:bg-secondary-focus transition-all'
-          >
-            Reset
-          </button>
-          <select
-            value={
-              Object.keys(speedMap).find(
-                (key) => speedMap[key] === sortingState.delay
-              ) || 'medium'
-            }
-            onChange={changeSortingSpeed}
-            className='ml-auto text-base-content px-2 py-3.5 rounded-md cursor-pointer outline-none focus:ring ring-primary bg-primary'
-          >
-            <option value='slow'>Slow</option>
-            <option value='medium'>Medium</option>
-            <option value='fast'>Fast</option>
-          </select>
+        <div className='flex flex-col items-center gap-4 mb-8 w-full'>
+          <div className='flex items-center gap-4'>
+            {/* Start/Resume/Pause and Reset buttons */}
+            <div className='flex items-center gap-4'>
+              {!sortingState.sorting ? (
+                <button
+                  onClick={startVisualizing}
+                  className='relative inline-block no-underline rounded-md border border-primary bg-primary text-center transition-all duration-100 hover:bg-secondary hover:border-secondary active:shadow-[0px_2px_0px_#b0a8b9] active:relative active:top-1 px-5 py-3 text-base-content'
+                >
+                  Start
+                </button>
+              ) : (
+                <button
+                  onClick={pauseResumeSorting}
+                  className='relative inline-block no-underline rounded-md border border-primary bg-primary text-center transition-all duration-100 hover:bg-secondary hover:border-secondary active:shadow-[0px_2px_0px_#b0a8b9] active:relative active:top-1 px-5 py-3 text-base-content '
+                >
+                  {sortingState.paused ? 'Resume' : 'Pause'}
+                </button>
+              )}
+              <button
+                onClick={generateSortingArray}
+                className='bg-secondary text-base-content px-5 py-3 rounded-md hover:bg-secondary-focus transition-all'
+              >
+                Reset
+              </button>
+
+              {/* Speed selection */}
+              <select
+                value={
+                  Object.keys(speedMap).find(
+                    (key) => speedMap[key] === sortingState.delay
+                  ) || 'medium'
+                }
+                onChange={changeSortingSpeed}
+                className='text-base-content px-5 py-3 rounded-md cursor-pointer outline-none focus:ring ring-primary bg-primary'
+              >
+                <option value='slow'>Slow</option>
+                <option value='medium'>Medium</option>
+                <option value='fast'>Fast</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 

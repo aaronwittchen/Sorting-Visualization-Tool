@@ -1,0 +1,79 @@
+{
+  "bubble_sort": {
+    "name": "Bubble Sort",
+    "time_complexity": {
+      "best": ["O(n)", "amber-500"],
+      "average": ["O(n²)", "rose-500"],
+      "worst": ["O(n²)", "rose-500"]
+    },
+    "space_complexity": ["O(1)", "teal-800"],
+    "description": "\nKey Steps:\n1. Start at the beginning of the list.\n2. Compare each pair of adjacent elements.\n3. Swap them if they are in the wrong order.\n4. Continue this process until reaching the end of the list.\n5. Repeat the process for the remaining unsorted portion until no swaps are needed.\n\nEfficiency:\nWorst-case and average-case time complexity is O(n²), while the best case (already sorted) is O(n). Space complexity is O(1). Bubble Sort is mainly used for educational purposes or small datasets.\n\nNotes:\nSimple to implement but inefficient for large datasets. Slightly optimized versions can stop early if no swaps occur in a pass.",
+    "pseudocode": "BubbleSort(array):\n    n = length of array\n    for i from 0 to n-1:\n        swapped = false\n        for j from 0 to n-i-2:\n            if array[j] > array[j+1]:\n                swap array[j] and array[j+1]\n                swapped = true\n        if swapped == false:\n            break"
+  },
+  "selection_sort": {
+    "name": "Selection Sort",
+    "time_complexity": {
+      "best": ["O(n²)", "rose-500"],
+      "average": ["O(n²)", "rose-500"],
+      "worst": ["O(n²)", "rose-500"]
+    },
+    "space_complexity": ["O(1)", "teal-800"],
+    "description": "\nKey Steps:\n1. Start with the first element of the unsorted portion.\n2. Find the minimum element in the unsorted portion.\n3. Swap it with the first unsorted element.\n4. Move the boundary of the sorted portion one step forward.\n5. Repeat until the entire list is sorted.\n\nEfficiency:\nTime complexity is O(n²) in all cases; space complexity is O(1). Requires fewer swaps than Bubble Sort but still inefficient for large datasets.\n\nNotes:\nGood for small datasets or when minimizing swaps is important. Not stable by default.",
+    "pseudocode": "SelectionSort(array):\n    n = length of array\n    for i from 0 to n-1:\n        min_index = i\n        for j from i+1 to n-1:\n            if array[j] < array[min_index]:\n                min_index = j\n        if min_index != i:\n            swap array[i] and array[min_index]"
+  },
+  "insertion_sort": {
+    "name": "Insertion Sort",
+    "time_complexity": {
+      "best": ["O(n)", "amber-500"],
+      "average": ["O(n²)", "rose-500"],
+      "worst": ["O(n²)", "rose-500"]
+    },
+    "space_complexity": ["O(1)", "teal-800"],
+    "description": "\nKey Steps:\n1. Assume the first element is sorted.\n2. Take the next element and compare it to the sorted portion.\n3. Shift larger elements in the sorted portion one step to the right.\n4. Insert the current element into its correct position.\n5. Repeat for all elements.\n\nEfficiency:\nBest-case time complexity is O(n) for already sorted arrays, worst-case is O(n²). Space complexity is O(1). Performs well on small or nearly sorted datasets.\n\nNotes:\nStable algorithm, simple to implement, and often used for small datasets or as part of hybrid algorithms like TimSort.",
+    "pseudocode": "InsertionSort(array):\n    n = length of array\n    for i from 1 to n-1:\n        key = array[i]\n        j = i - 1\n        while j >= 0 and array[j] > key:\n            array[j+1] = array[j]\n            j = j - 1\n        array[j+1] = key"
+  },
+  "merge_sort": {
+    "name": "Merge Sort",
+    "time_complexity": {
+      "best": ["O(n log n)", "amber-500"],
+      "average": ["O(n log n)", "amber-500"],
+      "worst": ["O(n log n)", "amber-500"]
+    },
+    "space_complexity": ["O(n)", "amber-500"],
+    "description": "\nKey Steps:\n1. Divide the list into two halves recursively until each sublist has one element.\n2. Merge sublists by comparing elements and building a sorted list.\n3. Continue merging until the entire list is sorted.\n\nEfficiency:\nTime complexity is O(n log n) for all cases; space complexity is O(n) due to temporary arrays for merging.\n\nNotes:\nStable and efficient for large datasets. Preferred for linked lists or datasets where stability is required.",
+    "pseudocode": "MergeSort(array):\n    if length(array) > 1:\n        mid = length(array) // 2\n        left = array[0..mid-1]\n        right = array[mid..end]\n        MergeSort(left)\n        MergeSort(right)\n        merge left and right into array"
+  },
+  "quick_sort": {
+    "name": "Quick Sort",
+    "time_complexity": {
+      "best": ["O(n log n)", "amber-500"],
+      "average": ["O(n log n)", "amber-500"],
+      "worst": ["O(n²)", "rose-500"]
+    },
+    "space_complexity": ["O(log n)", "teal-800"],
+    "description": "\nKey Steps:\n1. Choose a pivot element (first, last, random, or median).\n2. Partition elements: less than pivot to left, greater to right.\n3. Recursively apply Quick Sort to left and right subarrays.\n4. Stop when subarrays have fewer than two elements.\n\nEfficiency:\nAverage-case time complexity is O(n log n); worst-case is O(n²) if pivot selection is poor. Space complexity is O(log n) due to recursion.\n\nNotes:\nHighly efficient for large datasets in practice. Performance improves with good pivot selection strategies.",
+    "pseudocode": "QuickSort(array, low, high):\n    if low < high:\n        pi = partition(array, low, high)\n        QuickSort(array, low, pi-1)\n        QuickSort(array, pi+1, high)\n\npartition(array, low, high):\n    pivot = array[high]\n    i = low - 1\n    for j from low to high-1:\n        if array[j] <= pivot:\n            i = i + 1\n            swap array[i] and array[j]\n    swap array[i+1] and array[high]\n    return i+1"
+  },
+  "radix_sort": {
+    "name": "Radix Sort",
+    "time_complexity": {
+      "best": ["O(nk)", "teal-800"],
+      "average": ["O(nk)", "teal-800"],
+      "worst": ["O(nk)", "teal-800"]
+    },
+    "space_complexity": ["O(n + k)", "amber-500"],
+    "description": "\nKey Steps:\n1. Determine the maximum number of digits in the dataset.\n2. Distribute elements into buckets based on the current digit.\n3. Collect elements from buckets in order.\n4. Move to the next digit and repeat.\n5. Continue until all digits are processed.\n\nEfficiency:\nTime complexity is O(nk) where k is the number of digits; space complexity is O(n + k). Efficient when k is small compared to n.\n\nNotes:\nNon-comparative and stable. Works best with integers or fixed-length strings.",
+    "pseudocode": "RadixSort(array):\n    max_digits = number of digits in the largest element\n    for digit from least to most significant:\n        create buckets for each digit\n        place elements in buckets based on current digit\n        collect elements from buckets back into array"
+  },
+  "bucket_sort": {
+    "name": "Bucket Sort",
+    "time_complexity": {
+      "best": ["O(n + k)", "teal-800"],
+      "average": ["O(n + n log(n/k))", "amber-500"],
+      "worst": ["O(n²)", "rose-500"]
+    },
+    "space_complexity": ["O(n + k)", "amber-500"],
+    "description": "\nKey Steps:\n1. Determine data range and create appropriate buckets.\n2. Distribute elements into corresponding buckets.\n3. Sort each bucket individually (e.g., using Insertion Sort).\n4. Concatenate all buckets to form the sorted array.\n\nEfficiency:\nTime complexity is O(n + k) for well-distributed data; worst-case is O(n²). Space complexity is O(n + k).\n\nNotes:\nStable if internal bucket sort is stable. Effective for floating-point numbers and uniform distributions.",
+    "pseudocode": "BucketSort(array):\n    create k buckets\n    for each element in array:\n        put element into appropriate bucket\n    for each bucket:\n        sort bucket\n    concatenate all buckets into array"
+  }
+}
