@@ -8,6 +8,10 @@
 [![Codecov](https://codecov.io/gh/aaronwittchen/Sorting-Visualization-Tool/branch/main/graph/badge.svg)](https://codecov.io/gh/aaronwittchen/Sorting-Visualization-Tool)
 [![GitHub last commit](https://img.shields.io/github/last-commit/aaronwittchen/Sorting-Visualization-Tool)](https://github.com/aaronwittchen/Sorting-Visualization-Tool/commits)
 
+# 🚧 Work in Progress
+This project is being **revamped**! A new version is coming soon with updated features and improvements.  
+> This current version may soon be outdated.
+
 Interactive web application that visualizes 7 sorting algorithms in real-time. Built with React 18 and Tailwind CSS.  
 Live page: https://sorting-visualization-tool.vercel.app/
 
